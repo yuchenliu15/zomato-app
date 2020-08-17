@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import InfoCard from '../Card'
 
 const DEFAULT_LOCATION = {
   latitude: 40.7295,
@@ -13,14 +14,14 @@ function App() {
   const [data, setData] = useState({});
 
   const fetchData = async location => {
-    const data = await axios.get(
+    const res = await axios.get(
         `https://developers.zomato.com/api/v2.1/geocode?
           lat=${location.latitude}&lon=${location.longitude}`,
         {
           headers: {'user-key': ZOMATO}
         }
       );
-    setData(data);
+    setData(res.data);
   }
 
   useEffect(() => {
@@ -37,11 +38,22 @@ function App() {
     }
 
   }, []);
-
+  console.log(data)
   return (
     <div className="App">
       <header className="App-header">
-        init
+        {
+          data.nearby_restaurants && data.nearby_restaurants.map(item =>
+            {
+              item = item.restaurant;
+              return (<InfoCard 
+                name={item.name}
+                type={item.cuisine}
+                address={item.location?.address}
+                price={item.price_range}/>
+                )
+              })
+        }
       </header>
     </div>
   );
