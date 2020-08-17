@@ -24,6 +24,7 @@ function App() {
 
   const classes = useStyles();
   const [data, setData] = useState({});
+  const [joints, setJoints] = useState([])
 
   const fetchData = async location => {
     const res = await axios.get(
@@ -34,6 +35,20 @@ function App() {
         }
       );
     setData(res.data);
+    if(res.data.nearby_restaurants)
+      setJoints(res.data.nearby_restaurants)
+  }
+
+  const fetchSearchData = async name => {
+    const res = await axios.get(
+        `https://developers.zomato.com/api/v2.1/search?q=${name}`,
+        {
+          headers: {'user-key': ZOMATO}
+        }
+      );
+    setData(res.data);
+    if(res.data.restaurants)
+      setJoints(res.data.restaurants)
   }
 
   useEffect(() => {
@@ -55,15 +70,15 @@ function App() {
     <div className="App">
       <Grid container spacing={3} className={classes.container}>
         <Grid item xs={12}>
-          <SearchField />
+          <SearchField fetchSearchData={fetchSearchData}/>
         </Grid>
         {
-          data.nearby_restaurants && data.nearby_restaurants.map(item =>
+          joints.map(item =>
             {
               item = item.restaurant;
               return (
-                <Grid item>
-                  <InfoCard 
+                <Grid item key={item.name} >
+                  <InfoCard
                     name={item.name}
                     type={item.cuisine}
                     address={item.location?.address}

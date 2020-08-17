@@ -12,15 +12,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchField = () => {
+const SearchField = ({fetchSearchData}) => {
   const classes = useStyles();
   const [input, setInput] = useState('');
 
   const onInputChange = e => setInput(e.target.value)
 
   const onSearch = e => {
-    e.preventDefault();
-    console.log(input)
+    e.preventDefault()
+    fetchSearchData(input);
   }
 
   return (
