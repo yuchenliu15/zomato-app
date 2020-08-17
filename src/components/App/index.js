@@ -65,7 +65,7 @@ function App() {
     }
 
   }, []);
-  console.log(data)
+
   return (
     <div className="App">
       <Grid container spacing={3} className={classes.container}>
@@ -78,11 +78,7 @@ function App() {
               item = item.restaurant;
               return (
                 <Grid item key={item.name} >
-                  <InfoCard
-                    name={item.name}
-                    type={item.cuisine}
-                    address={item.location?.address}
-                    price={item.price_range}/>
+                  <InfoCard item={item}/>
                 </Grid>
                 )
               })
