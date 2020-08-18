@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Switch from '@material-ui/core/Switch';
 import InfoCard from '../Card';
 import SearchField from '../SearchField';
 
@@ -24,7 +25,8 @@ function App() {
 
   const classes = useStyles();
   const [data, setData] = useState({});
-  const [joints, setJoints] = useState([])
+  const [joints, setJoints] = useState([]);
+  const [showMap, setShowMap] = useState(false);
 
   const fetchData = async location => {
     const res = await axios.get(
@@ -51,6 +53,13 @@ function App() {
       setJoints(res.data.restaurants)
   }
 
+  const onMapToggle = () => {
+    if(showMap)
+      setShowMap(false);
+    else
+      setShowMap(true)
+  }
+
   useEffect(() => {
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -71,6 +80,15 @@ function App() {
       <Grid container spacing={3} className={classes.container}>
         <Grid item xs={12}>
           <SearchField fetchSearchData={fetchSearchData}/>
+        </Grid>
+        <Grid item xs={12}>
+          map mode
+          <Switch
+            checked={showMap}
+            onChange={onMapToggle}
+            name="mapCheck"
+            inputProps={{ 'aria-label': 'secondary checkbox' }}
+          />        
         </Grid>
         {
           joints.map(item =>
