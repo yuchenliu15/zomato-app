@@ -38,14 +38,14 @@ function App() {
   const fetchData = async location => {
     setIsLoading(true);
     const res = await axios.get(
-        `https://developers.zomato.com/api/v2.1/geocode?
+      `https://developers.zomato.com/api/v2.1/geocode?
           lat=${location.latitude}&lon=${location.longitude}`,
-        {
-          headers: {'user-key': ZOMATO}
-        }
-      );
+      {
+        headers: { 'user-key': ZOMATO }
+      }
+    );
     setData(res.data);
-    if(res.data.nearby_restaurants)
+    if (res.data.nearby_restaurants)
       setJoints(res.data.nearby_restaurants)
     setIsLoading(false);
   }
@@ -53,26 +53,26 @@ function App() {
   const fetchSearchData = async name => {
     setIsLoading(true);
     const res = await axios.get(
-        `https://developers.zomato.com/api/v2.1/search?q=${name}`,
-        {
-          headers: {'user-key': ZOMATO}
-        }
-      );
+      `https://developers.zomato.com/api/v2.1/search?q=${name}`,
+      {
+        headers: { 'user-key': ZOMATO }
+      }
+    );
     setData(res.data);
-    if(res.data.restaurants)
+    if (res.data.restaurants)
       setJoints(res.data.restaurants)
     setIsLoading(false);
   }
 
   const onMapToggle = () => {
-    if(showMap)
+    if (showMap)
       setShowMap(false);
     else
       setShowMap(true)
   }
 
   useEffect(() => {
-    if(navigator.geolocation) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           position = {
@@ -92,7 +92,7 @@ function App() {
     <div className="App">
       <Grid container spacing={3} className={classes.container}>
         <Grid item xs={12}>
-          <SearchField fetchSearchData={fetchSearchData}/>
+          <SearchField fetchSearchData={fetchSearchData} />
         </Grid>
         <Grid item xs={12}>
           map mode
@@ -101,23 +101,22 @@ function App() {
             onChange={onMapToggle}
             name="mapCheck"
             inputProps={{ 'aria-label': 'secondary checkbox' }}
-          />        
+          />
         </Grid>
         {
           isLoading
-            ? <CircularProgress className={classes.spinner}/>
+            ? <CircularProgress className={classes.spinner} />
             : (
               showMap
-                ? joints.map(item =>
-                  {
-                    item = item.restaurant;
-                    return (
-                      <Grid item key={item.name} >
-                        <InfoCard item={item}/>
-                      </Grid>
-                      )
-                    })
-                : <Map joints={joints} current={position} />
+                ? <Map joints={joints} current={position} />
+                : joints.map(item => {
+                  item = item.restaurant;
+                  return (
+                    <Grid item key={item.name} >
+                      <InfoCard item={item} />
+                    </Grid>
+                  )
+                })
             )
         }
       </Grid>
