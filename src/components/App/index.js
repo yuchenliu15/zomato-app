@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Switch from '@material-ui/core/Switch';
 import InfoCard from '../Card';
 import SearchField from '../SearchField';
+import { CircularProgress } from '@material-ui/core';
 
 const DEFAULT_LOCATION = {
   latitude: 40.7295,
@@ -19,6 +20,9 @@ const useStyles = makeStyles({
     width: '80%',
     margin: 'auto'
   },
+  spinner: {
+    margin: 'auto'
+  }
 });
 
 function App() {
@@ -27,8 +31,10 @@ function App() {
   const [data, setData] = useState({});
   const [joints, setJoints] = useState([]);
   const [showMap, setShowMap] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async location => {
+    setIsLoading(true);
     const res = await axios.get(
         `https://developers.zomato.com/api/v2.1/geocode?
           lat=${location.latitude}&lon=${location.longitude}`,
@@ -39,9 +45,11 @@ function App() {
     setData(res.data);
     if(res.data.nearby_restaurants)
       setJoints(res.data.nearby_restaurants)
+    setIsLoading(false);
   }
 
   const fetchSearchData = async name => {
+    setIsLoading(true);
     const res = await axios.get(
         `https://developers.zomato.com/api/v2.1/search?q=${name}`,
         {
@@ -51,6 +59,7 @@ function App() {
     setData(res.data);
     if(res.data.restaurants)
       setJoints(res.data.restaurants)
+    setIsLoading(false);
   }
 
   const onMapToggle = () => {
@@ -91,15 +100,17 @@ function App() {
           />        
         </Grid>
         {
-          joints.map(item =>
-            {
-              item = item.restaurant;
-              return (
-                <Grid item key={item.name} >
-                  <InfoCard item={item}/>
-                </Grid>
-                )
-              })
+          isLoading?
+            <CircularProgress className={classes.spinner}/>
+            :joints.map(item =>
+              {
+                item = item.restaurant;
+                return (
+                  <Grid item key={item.name} >
+                    <InfoCard item={item}/>
+                  </Grid>
+                  )
+                })
         }
       </Grid>
     </div>
