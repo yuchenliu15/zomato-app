@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
+import { CircularProgress } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Switch from '@material-ui/core/Switch';
 import InfoCard from '../Card';
 import SearchField from '../SearchField';
-import { CircularProgress } from '@material-ui/core';
+import Map from '../Map';
 
 const DEFAULT_LOCATION = {
   latitude: 40.7295,
-  longitude: 73.9965
+  longitude: -73.9965
 }
 // for easy demo, I'll leave the API key exposed
 const ZOMATO = '058759b89bd02ab3ef6c3f62c57e96cd'
@@ -30,6 +31,7 @@ function App() {
   const classes = useStyles();
   const [data, setData] = useState({});
   const [joints, setJoints] = useState([]);
+  const [position, setPosition] = useState(DEFAULT_LOCATION);
   const [showMap, setShowMap] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -73,10 +75,12 @@ function App() {
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          fetchData({
+          position = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
-          })
+          };
+          setPosition(position);
+          fetchData(position);
         },
         (error) => fetchData(DEFAULT_LOCATION)
       );
@@ -100,17 +104,21 @@ function App() {
           />        
         </Grid>
         {
-          isLoading?
-            <CircularProgress className={classes.spinner}/>
-            :joints.map(item =>
-              {
-                item = item.restaurant;
-                return (
-                  <Grid item key={item.name} >
-                    <InfoCard item={item}/>
-                  </Grid>
-                  )
-                })
+          isLoading
+            ? <CircularProgress className={classes.spinner}/>
+            : (
+              showMap
+                ? joints.map(item =>
+                  {
+                    item = item.restaurant;
+                    return (
+                      <Grid item key={item.name} >
+                        <InfoCard item={item}/>
+                      </Grid>
+                      )
+                    })
+                : <Map joints={joints} current={position} />
+            )
         }
       </Grid>
     </div>
